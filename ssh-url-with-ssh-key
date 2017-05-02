@@ -1,0 +1,66 @@
+#!/bin/bash
+if [[ "$1" == --help ]] ; then
+  sed -e 's/^  //' <<EOF
+  $0 is a wrapper for ssh that extracts a base64 encoded SSH key
+  from the SSH user~key@host URL and launches SSH with that key.
+
+  Set the GIT_SSH environment variable to this script ($0)
+  to activate it for your git usage.
+
+  Usage:
+
+  $0 [--help | --create | user~key@host] [command]
+
+  --create    Create a new private and public SSH key. This will print
+              out the private key as you should append it to the SSH
+              user and the public key to add to a remote system.
+
+  Example usage:
+
+  GIT_SSH=$0 git clone git~LS0tLS1CRUdJTiBP....SDFWENF324DS=@github.com:user/repo.git
+
+  $0 user~LS0tLS1CRUdJTiBP....SDFWENF324DS=@host
+
+
+  Written to support GitHub Deploy Keys with tools that cannot manage
+  SSH keys but only offer to store a GitHub URL.
+
+  License: © 2017 Schlomo Schapiro, Zalando SE
+
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+EOF
+elif [[ "$1" == --create ]] ; then
+  shift
+  key_file=$(mktemp -u)
+  trap "rm -f $key_file" EXIT
+  ssh-keygen -q -b 256 -t ecdsa -N "" -C "$*" -f $key_file
+  echo Append this base64-encoded private key to the username:
+  echo "~$(base64 -w0 <$key_file)"
+  echo Public Key:
+  cat $key_file.pub
+elif [[ "$1" == *~*@* ]] ; then
+  IFS="~@" read user key host <<<"$1"
+  shift
+  remote="$user@$host"
+  key_file=$(mktemp)
+  trap "rm -f $key_file" EXIT
+  base64 -d <<<"$key" >$key_file
+  ssh -i $key_file "$remote" "$@"
+else
+  exec ssh "$@"
+fi
