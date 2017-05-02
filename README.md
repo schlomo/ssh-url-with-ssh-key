@@ -32,4 +32,4 @@ ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJbEG72f
 
 ```
 Written to support [GitHub Deploy Keys](https://developer.github.com/guides/managing-deploy-keys/#deploy-keys) with tools that cannot manage
-SSH keys but only offer to store a GitHub URL.
+per-repository SSH keys but only offer to store a GitHub URL.
