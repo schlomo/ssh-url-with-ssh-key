@@ -1,5 +1,7 @@
 # ssh-url-with-ssh-key SSH wrapper
 
+See also http://blog.schlomo.schapiro.org/2017/05/embedding-ssh-key-in-ssh-url.html
+
 ssh-url-with-ssh-key is a wrapper for ssh that extracts a base64 encoded SSH key
 from the SSH `user`**~key**`@host` URL and launches SSH with that key.
 
