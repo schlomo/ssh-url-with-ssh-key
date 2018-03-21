@@ -50,7 +50,7 @@ elif [[ "$1" == --create ]] ; then
   trap "rm -f $key_file" EXIT
   ssh-keygen -q -b 256 -t ecdsa -N "" -C "$*" -f $key_file
   echo Append this base64-encoded private key to the username:
-  echo "~$(base64 -w0 <$key_file)"
+  echo "~$(base64 <$key_file | tr -d "\n\r")"
   echo Public Key:
   cat $key_file.pub
 elif [[ "$1" == *~*@* ]] ; then
