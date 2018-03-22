@@ -69,3 +69,4 @@ nothing to commit, working tree clean
 ```
 
 See [Using Kubernetes with Multiple Containers for Initialization and Maintenance](http://blog.schlomo.schapiro.org/2017/06/using-kubernetes-with-multiple.html) for a working example of using this Docker image.
+
